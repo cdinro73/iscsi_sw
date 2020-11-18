@@ -1,0 +1,59 @@
+[root@target ~]# yum install scsi-target-utils -y
+[root@target ~]# chkconfig tgtd on
+[root@target ~]# tgtadm --lld iscsi --mode target --op new --tid=1 --targetname iqn.2012-07.com.unixh4cks:data_store_01
+[root@target ~]# tgtadm --lld iscsi --mode logicalunit --op new --tid 1 --lun 1 -b /dev/iscsi/lun0 
+[root@target ~]# tgtadm --lld iscsi --mode logicalunit --op new --tid 1 --lun 2 -b /dev/iscsi/lun1 
+[root@target ~]# tgtadm --lld iscsi --mode target --op bind --tid 1 -I ALL
+[root@target ~]# tgtadm --lld iscsi --op show --mode target
+Target 1: iqn.2012-07.com.unixh4cks:data_store_01
+    System information:
+        Driver: iscsi
+        State: ready
+    I_T nexus information:
+    LUN information:
+        LUN: 0
+            Type: controller
+            SCSI ID: IET     00010000
+            SCSI SN: beaf10
+            Size: 0 MB, Block size: 1
+            Online: Yes
+            Removable media: No
+            Readonly: No
+            Backing store type: null
+            Backing store path: None
+            Backing store flags: 
+        LUN: 1
+            Type: disk
+            SCSI ID: IET     00010001
+            SCSI SN: beaf11
+            Size: 10737 MB, Block size: 512
+            Online: Yes
+            Removable media: No
+            Readonly: No
+            Backing store type: rdwr
+            Backing store path: /dev/iscsi/lun0
+            Backing store flags: 
+        LUN: 2
+            Type: disk
+            SCSI ID: IET     00010002
+            SCSI SN: beaf12
+            Size: 7516 MB, Block size: 512
+            Online: Yes
+            Removable media: No
+            Readonly: No
+            Backing store type: rdwr
+            Backing store path: /dev/iscsi/lun1
+            Backing store flags: 
+    Account information:
+    ACL information:
+        ALL
+[root@target ~]# tgt-admin --dump
+default-driver iscsi
+
+<target iqn.2012-07.com.unixh4cks:data_store_01>
+	backing-store /dev/iscsi/lun0
+	backing-store /dev/iscsi/lun1
+</target>
+
+[root@target ~]# tgt-admin --dump > /etc/tgt/targets.conf 
+[root@target ~]# 

@@ -1,0 +1,22 @@
+PORTAL=192.168.200.135:3260
+CONTROL=4321
+IQN=iqn.2013-10.com.mint:data_store_01
+DEVICE=/dev/sdb
+
+#start
+case "$1" in
+        start)
+		tgtd --iscsi portal:$PORTAL -C $CONTROL
+		tgtadm -C $CONTROL --lld iscsi --mode target --op new --tid=1 --targetname $IQN
+		tgtadm -C $CONTROL --lld iscsi --mode logicalunit --op new --tid 1 --lun 2 -b $DEVICE
+		tgtadm -C $CONTROL --lld iscsi --mode target --op bind --tid 1 -I ALL
+		tgtadm -C $CONTROL --lld iscsi --op show --mode target
+		;;
+#stop
+	stop)
+		tgt-admin -C $CONTROL --update ALL -c /dev/null -f
+		tgtadm -C $CONTROL --op delete --mode system
+		;;
+        *)
+                echo "Usage: start|stop"
+esac

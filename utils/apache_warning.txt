@@ -1,0 +1,1 @@
+short_open_tags must be On in php.ini (default Off)
